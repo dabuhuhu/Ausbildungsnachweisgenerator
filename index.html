@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="ausbildungsnachweis.css">
+    <title>Ausbildungsnachweis | Generator</title>
+</head>
+<body>
+    
+    <div id="main-a">
+    
+        <div class="button-group">
+            <button class="hours-btn" onclick="setHours('(7.88h)')">7.88h</button>
+            <button class="hours-btn" onclick="setHours('(8h)')">8h</button>
+            <input type="number" id="customHours" placeholder="0h" min="0" max="69" step="0.01">
+            <button class="apply-btn" onclick="setCustomHours()">Apply</button>
+        </div>
+        
+        <div id="ausbildungsnachweis">
+            <ul>
+                <li><span id="monday"></span>Montag</li><br>
+                <li><span id="tuesday"></span>Dienstag</li><br>
+                <li><span id="wednesday"></span>Mittwoch</li><br>
+                <li><span id="thursday"></span>Donnerstag</li><br>
+                <li><span id="friday"></span>Freitag</li>
+            </ul>
+        </div>
+        
+        <div class="button-group">
+            <button class="week-btn" onclick="changeWeek(-1)">Previous Week</button>
+            <button class="week-btn" onclick="changeWeek(1)">Next Week</button>
+        </div>
+    
+        <div class="copy-container">
+            <button class="copy-btn" onclick="copyToClipboard()">Copy</button>
+            <span id="copy-message" class="hidden">Saved to clipboard</span>
+        </div>
+
+    </div>
+    
+    <script>
+        // Get the current date
+    var today = new Date();
+    
+    // Calculate the number of days since Monday (0-6, where 0 is Monday)
+    var daysSinceMonday = (today.getDay() + 6) % 7;
+
+    // Calculate the date of the previous Monday
+    var monday = new Date(today.getTime() - daysSinceMonday * 24 * 60 * 60 * 1000);
+
+    // Set the dates for each weekday
+    setWeekdays(monday);
+
+    function setWeekdays(monday) {
+      document.getElementById("monday").textContent = formatDate(monday);
+      document.getElementById("tuesday").textContent = formatDate(new Date(monday.getTime() + 1 * 24 * 60 * 60 * 1000));
+      document.getElementById("wednesday").textContent = formatDate(new Date(monday.getTime() + 2 * 24 * 60 * 60 * 1000));
+      document.getElementById("thursday").textContent = formatDate(new Date(monday.getTime() + 3 * 24 * 60 * 60 * 1000));
+      document.getElementById("friday").textContent = formatDate(new Date(monday.getTime() + 4 * 24 * 60 * 60 * 1000));
+    }
+
+    // Format the date as a string in the format "dd-mm-yyyy"
+    function formatDate(date) {
+      var day = date.getDate().toString().padStart(2, "0");
+      var month = (date.getMonth() + 1).toString().padStart(2, "0");
+      var year = date.getFullYear();
+      return day + "." + month + "." + year;
+    }
+
+    var selectedHours = "";
+
+    function setHours(hours) {
+      if (selectedHours === hours) {
+        selectedHours = "";
+      } else {
+        selectedHours = hours;
+      }
+      updateHours();
+    }
+    
+    function setCustomHours() {
+      var customHours = document.getElementById("customHours").value;
+      if (customHours) {
+        selectedHours = "(" + customHours + "h)";
+        updateHours();
+      }
+    }
+
+    function updateHours() {
+      document.getElementById("monday").textContent = formatDate(monday) + " " + selectedHours;
+      document.getElementById("tuesday").textContent = formatDate(new Date(monday.getTime() + 1 * 24 * 60 * 60 * 1000)) + " " + selectedHours;
+      document.getElementById("wednesday").textContent = formatDate(new Date(monday.getTime() + 2 * 24 * 60 * 60 * 1000)) + " " + selectedHours;
+      document.getElementById("thursday").textContent = formatDate(new Date(monday.getTime() + 3 * 24 * 60 * 60 * 1000)) + " " + selectedHours;
+      document.getElementById("friday").textContent = formatDate(new Date(monday.getTime() + 4 * 24 * 60 * 60 * 1000)) + " " + selectedHours;
+    }
+    
+    function changeWeek(weeks) {
+      monday = new Date(monday.getTime() + weeks * 7 * 24 * 60 * 60 * 1000);
+      setWeekdays(monday);
+      updateHours();
+    }
+
+    function copyToClipboard() {
+    var ausbildungsnachweis = document.getElementById("ausbildungsnachweis").innerText;
+    navigator.clipboard.writeText(ausbildungsnachweis).then(function() {
+        var copyMessage = document.getElementById("copy-message");
+        copyMessage.classList.remove("hidden");
+        setTimeout(function() {
+            copyMessage.classList.add("hidden");
+        }, 3000);
+    }, function() {
+        alert("Failed to copy to clipboard.");
+    });
+}
+    </script>
+</body>
+</html>
